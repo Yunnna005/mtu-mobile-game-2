@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 8647819033078503764}
   - component: {fileID: 8417998460183406247}
   - component: {fileID: -6775159617490322649}
+  - component: {fileID: 1283237086558316662}
+  - component: {fileID: 7519572301331623670}
   m_Layer: 0
   m_Name: Ball_2_5
   m_TagString: Untagged
@@ -117,7 +119,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1132769235449587128}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 12
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -131,8 +133,36 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 72
   m_CollisionDetection: 0
+--- !u!114 &1283237086558316662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132769235449587128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f6bf6d29a692ea41a4d7aef0f41ef5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tier: 0
+  hasBeenDropped: 0
+--- !u!114 &7519572301331623670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132769235449587128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca723573ffd94f4da8d8cd8b9508f13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineWidth: 0.05
+  lineColor: {r: 1, g: 1, b: 1, a: 0.4}
