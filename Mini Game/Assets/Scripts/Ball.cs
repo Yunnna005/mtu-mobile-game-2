@@ -16,13 +16,13 @@ public class Ball : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Ball other = collision.gameObject.GetComponent<Ball>();
+        if (other == null) return;
+
         if (hasMerged) return;
         if (Time.time - spawnTime < mergeCooldown) return;
-
-        Ball other = collision.gameObject.GetComponent<Ball>();
-        if (other == null || other.hasMerged) return;
+        if (other.hasMerged) return;
         if (Time.time - other.spawnTime < other.mergeCooldown) return;
-
         if (other.tier != tier) return;
         if (tier >= GameManager.Instance.GetMaxTier()) return;
         if (gameObject.GetInstanceID() < other.gameObject.GetInstanceID()) return;

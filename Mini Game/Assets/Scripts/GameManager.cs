@@ -27,10 +27,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float maxReleaseVelocityX = 3f;
     [SerializeField] private float floorY = -8f;
     [SerializeField] private float maxUpwardVelocity = 3f;
+    [SerializeField] private float mergeCooldown = 0.2f;
 
     [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject gamePanel;
     [SerializeField] private Text scoreText;
+    [SerializeField] private Text scoreText2;
 
     private List<GameObject> ballPrefabs;
     private GameObject pendingBall;
@@ -38,8 +41,9 @@ public class GameManager : MonoBehaviour
 
     private bool isHolding = false;
     private bool canSpawn = true;
-    private bool isGameOver = false;
+    public bool isGameOver = false;
     private int score = 0;
+    private bool inputCooldown = false;
 
     private float lastDragVelocityX = 0f;
 
@@ -59,11 +63,15 @@ public class GameManager : MonoBehaviour
         };
 
         gameOverPanel.SetActive(false);
-        SpawnPendingBall();
+        gamePanel.SetActive(true);
+
+        AdMobManager.OnAdMobReady += OnAdMobReady;
     }
 
     private void Update()
     {
+        if (isGameOver) return;
+
         Ball[] allBalls = FindObjectsByType<Ball>(FindObjectsSortMode.None);
         foreach (Ball b in allBalls)
         {
@@ -85,14 +93,13 @@ public class GameManager : MonoBehaviour
 
     public void OnTouchBegan()
     {
-        if (isGameOver || pendingBall == null) return;
+        if (isGameOver || inputCooldown || pendingBall == null) return;
         isHolding = true;
-        lastDragVelocityX = 0f;
     }
 
     public void OnTouchDragged(float worldDeltaX, float velocityX)
     {
-        if (isGameOver || !isHolding || pendingBall == null) return;
+        if (isGameOver || inputCooldown || !isHolding || pendingBall == null) return;
 
         Vector3 pos = pendingBall.transform.position;
         float newX = Mathf.Clamp(pos.x + worldDeltaX, horizontalMin, horizontalMax);
@@ -104,10 +111,9 @@ public class GameManager : MonoBehaviour
         if (dl != null) dl.UpdateLine(floorY);
     }
 
-
     public void OnTouchReleased()
     {
-        if (isGameOver || !isHolding || pendingBall == null) return;
+        if (isGameOver || inputCooldown || !isHolding || pendingBall == null) return;
         isHolding = false;
         DropBall();
     }
@@ -117,30 +123,34 @@ public class GameManager : MonoBehaviour
         if (!canSpawn) return;
 
         int tier = Random.Range(0, SpawnableTiers);
-        pendingBall = Instantiate(
-            ballPrefabs[tier],
-            new Vector3(0f, spawnY, spawnZ),
-            Quaternion.identity
-        );
+        pendingBall = Instantiate(ballPrefabs[tier], new Vector3(0f, spawnY, spawnZ), Quaternion.identity);
 
         Ball b = pendingBall.GetComponent<Ball>();
         b.tier = tier;
 
         pendingRb = pendingBall.GetComponent<Rigidbody>();
         if (pendingRb != null)
+        {
             pendingRb.isKinematic = true;
+        }
 
         lastDragVelocityX = 0f;
 
         DropLine dl = pendingBall.GetComponent<DropLine>();
-        if (dl != null) dl.ShowLine(floorY);
+        if (dl != null)
+        {
+            dl.ShowLine(floorY);
+        }
     }
 
     private void DropBall()
     {
         if (pendingBall == null) return;
         DropLine dl = pendingBall.GetComponent<DropLine>();
-        if (dl != null) dl.HideLine();
+        if (dl != null)
+        {
+            dl.HideLine();
+        }
 
         Ball b = pendingBall.GetComponent<Ball>();
         if (b != null) b.hasBeenDropped = true;
@@ -173,11 +183,58 @@ public class GameManager : MonoBehaviour
 
     public void TriggerGameOver()
     {
-        if (isGameOver) return; 
+        if (isGameOver) return;
+
         isGameOver = true;
         canSpawn = false;
-        if (pendingBall != null) Destroy(pendingBall);
-        gameOverPanel.SetActive(true);
+        isHolding = false;
+
+        StopAllCoroutines();
+
+        if (pendingBall != null)
+        {
+            Destroy(pendingBall);
+            pendingBall = null;
+            pendingRb = null;
+        }
+
+        if (gamePanel != null) gamePanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+    }
+
+    public void ResetGame()
+    {
+        StopAllCoroutines();
+
+        Ball[] allBalls = FindObjectsByType<Ball>(FindObjectsSortMode.None);
+        foreach (Ball b in allBalls)
+        {
+            if (b != null && b.gameObject != null)
+                Destroy(b.gameObject);
+        }
+
+        if (pendingBall != null)
+        {
+            Destroy(pendingBall);
+            pendingBall = null;
+            pendingRb = null;
+        }
+
+        GameOverTrigger trigger = FindFirstObjectByType<GameOverTrigger>();
+        if (trigger != null) trigger.ClearBalls();
+
+        isHolding = false;
+        canSpawn = true;
+        isGameOver = false;
+        score = 0;
+        lastDragVelocityX = 0f;
+
+        if (scoreText != null) scoreText.text = "Score: 0";
+        if (scoreText2 != null) scoreText2.text = "Score: 0";
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (gamePanel != null) gamePanel.SetActive(true);
+
+        SpawnPendingBall();
     }
 
     public void MergeBalls(int tier, Vector3 position)
@@ -209,10 +266,36 @@ public class GameManager : MonoBehaviour
         return ballPrefabs.Count - 1;
     }
 
-    private void AddScore(int amount)
+    public void AddScore(int amount)
     {
         score += amount;
-        if (scoreText != null)
-            scoreText.text = "Score: " + score;
+        if (scoreText != null) scoreText.text = "Score: " + score;
+        if (scoreText2 != null) scoreText2.text = "Score: " + score;
+    }
+
+    public void StartInputCooldown(float duration = 0.5f)
+    {
+        StartCoroutine(InputCooldownRoutine(duration));
+    }
+
+    private IEnumerator InputCooldownRoutine(float duration)
+    {
+        inputCooldown = true;
+        yield return new WaitForSeconds(duration);
+        inputCooldown = false;
+    }
+    private void OnAdMobReady()
+    {
+        AdMobManager.OnAdMobReady -= OnAdMobReady;
+        Debug.Log("AdMob ready — spawning ball");
+        isGameOver = false; 
+        isHolding = false;
+        canSpawn = true;
+        SpawnPendingBall();
+    }
+
+    private void OnDestroy()
+    {
+        AdMobManager.OnAdMobReady -= OnAdMobReady;
     }
 }
