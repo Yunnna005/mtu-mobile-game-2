@@ -41,4 +41,22 @@ public class ButtonController : MonoBehaviour
             Debug.Log("Ads not initialized yet.");
         }
     }
+
+    public void OnLeaderboardButtonPressed()
+    {
+        if (GooglePlayServicesManager.Instance != null)
+        {
+            GooglePlayServicesManager.Instance.ShowLeaderboard();
+        }
+
+    }
+
+    public void OnAchievementsButtonPressed()
+    {
+        if (GooglePlayServicesManager.Instance != null)
+        {
+            GooglePlayServicesManager.Instance.ShowAchievements();
+        }
+
+    }
 }

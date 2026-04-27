@@ -354,6 +354,7 @@ MonoBehaviour:
   maxReleaseVelocityX: 3
   floorY: -8
   maxUpwardVelocity: 3
+  mergeCooldown: 0.2
   gameOverPanel: {fileID: 1000231408}
   gamePanel: {fileID: 1627678094}
   scoreText: {fileID: 380706072}

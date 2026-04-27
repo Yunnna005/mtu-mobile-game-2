@@ -153,16 +153,15 @@ public class GameManager : MonoBehaviour
         }
 
         Ball b = pendingBall.GetComponent<Ball>();
-        if (b != null) b.hasBeenDropped = true;
+        if (b != null)
+        {
+            b.hasBeenDropped = true;
+        }
 
         if (pendingRb != null)
         {
             pendingRb.isKinematic = false;
-            pendingRb.constraints =
-                RigidbodyConstraints.FreezePositionZ |
-                RigidbodyConstraints.FreezeRotationX |
-                RigidbodyConstraints.FreezeRotationY;
-
+            pendingRb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
             pendingRb.linearVelocity = Vector3.zero;
         }
 
@@ -198,8 +197,20 @@ public class GameManager : MonoBehaviour
             pendingRb = null;
         }
 
-        if (gamePanel != null) gamePanel.SetActive(false);
-        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+        if (GooglePlayServicesManager.Instance != null)
+        {
+            GooglePlayServicesManager.Instance.PostScore(score);
+        }
+
+        if (gamePanel != null)
+        {
+            gamePanel.SetActive(false);
+        }
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
     }
 
     public void ResetGame()
@@ -221,7 +232,10 @@ public class GameManager : MonoBehaviour
         }
 
         GameOverTrigger trigger = FindFirstObjectByType<GameOverTrigger>();
-        if (trigger != null) trigger.ClearBalls();
+        if (trigger != null)
+        {
+            trigger.ClearBalls();
+        }
 
         isHolding = false;
         canSpawn = true;
@@ -239,6 +253,12 @@ public class GameManager : MonoBehaviour
 
     public void MergeBalls(int tier, Vector3 position)
     {
+        if (GooglePlayServicesManager.Instance != null)
+        {
+            GooglePlayServicesManager.Instance.UnlockAchievement(GooglePlayServicesManager.ACHIEVEMENT_FIRST_SHAPE);
+        }
+
+
         int nextTier = tier + 1;
         if (nextTier < ballPrefabs.Count)
         {
@@ -251,10 +271,7 @@ public class GameManager : MonoBehaviour
             Rigidbody rb = merged.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.constraints =
-                    RigidbodyConstraints.FreezePositionZ |
-                    RigidbodyConstraints.FreezeRotationX |
-                    RigidbodyConstraints.FreezeRotationY;
+                rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
             }
         }
 
@@ -269,8 +286,14 @@ public class GameManager : MonoBehaviour
     public void AddScore(int amount)
     {
         score += amount;
-        if (scoreText != null) scoreText.text = "Score: " + score;
-        if (scoreText2 != null) scoreText2.text = "Score: " + score;
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + score;
+        }
+        if (scoreText2 != null)
+        {
+            scoreText2.text = "Score: " + score;
+        }
     }
 
     public void StartInputCooldown(float duration = 0.5f)
