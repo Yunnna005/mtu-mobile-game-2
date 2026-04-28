@@ -4,9 +4,8 @@ using GooglePlayGames.BasicApi;
 
 public class GooglePlayServicesManager : MonoBehaviour
 {
-    public const string LEADERBOARD_HIGH_SCORE = "CgkI_YOUR_LEADERBOARD_ID";
-    public const string ACHIEVEMENT_FIRST_SHAPE = "CgkI_YOUR_ACHIEVEMENT_ID_1";
-    public const string ACHIEVEMENT_SCALE_MASTER = "CgkI_YOUR_ACHIEVEMENT_ID_2";
+    public const string LEADERBOARD_HIGH_SCORE = "CgkIotK8i6AcEAIQAQ";
+    public const string ACHIEVEMENT_FIRST_SHAPE = "CgkIotK8i6AcEAIQAg";
 
     public static GooglePlayServicesManager Instance { get; private set; }
     public bool IsAuthenticated => PlayGamesPlatform.Instance.IsAuthenticated();
