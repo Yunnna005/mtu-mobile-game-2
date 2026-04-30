@@ -1,42 +1,53 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class InputCaptureScript : MonoBehaviour
 {
     private float timer;
     private bool hasMoved;
-    private float tapThreshold = 0.5f;
+
+    void OnEnable()
+    {
+        EnhancedTouchSupport.Enable();
+    }
+
+    void OnDisable()
+    {
+        EnhancedTouchSupport.Disable();
+    }
 
     void Update()
     {
-        if (Input.touchCount > 0)
+        if (Touch.activeTouches.Count > 0)
         {
-            Touch t = Input.touches[0];
+            Touch t = Touch.activeTouches[0];
 
-            switch (t.phase)
+            if (t.phase == UnityEngine.InputSystem.TouchPhase.Began)
             {
-                case TouchPhase.Began:
-                    timer = 0f;
-                    hasMoved = false;
-                    GameManager.Instance.OnTouchBegan();
-                    break;
+                timer = 0f;
+                hasMoved = false;
+                GameManager.Instance.OnTouchBegan();
+            }
+            else if (t.phase == UnityEngine.InputSystem.TouchPhase.Stationary)
+            {
+                timer += Time.deltaTime;
+            }
+            else if (t.phase == UnityEngine.InputSystem.TouchPhase.Moved)
+            {
+                hasMoved = true;
+                timer += Time.deltaTime;
 
-                case TouchPhase.Stationary:
-                    timer += Time.deltaTime;
-                    break;
+                float worldDeltaX = t.delta.x / Screen.width * Camera.main.orthographicSize * Camera.main.aspect * 2f;
 
-                case TouchPhase.Moved:
-                    hasMoved = true;
-                    timer += Time.deltaTime;
+                float velocityX = Time.deltaTime > 0 ? worldDeltaX / Time.deltaTime : 0f;
 
-                    float worldDeltaX = t.deltaPosition.x / Screen.width * Camera.main.orthographicSize * Camera.main.aspect * 2f;
-                    float velocityX = Time.deltaTime > 0 ? worldDeltaX / Time.deltaTime: 0f;
-
-                    GameManager.Instance.OnTouchDragged(worldDeltaX, velocityX);
-                    break;
-
-                case TouchPhase.Ended:
-                    GameManager.Instance.OnTouchReleased();
-                    break;
+                GameManager.Instance.OnTouchDragged(worldDeltaX, velocityX);
+            }
+            else if (t.phase == UnityEngine.InputSystem.TouchPhase.Ended)
+            {
+                GameManager.Instance.OnTouchReleased();
             }
         }
     }
