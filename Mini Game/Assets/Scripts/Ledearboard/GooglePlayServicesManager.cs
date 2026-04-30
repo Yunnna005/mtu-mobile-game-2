@@ -56,6 +56,7 @@ public class GooglePlayServicesManager : MonoBehaviour
 
     public void ShowLeaderboard()
     {
+        print("ShowLeaderboard called. Authenticated: " + IsAuthenticated);
         if (!IsAuthenticated) 
         { 
             SignIn(); 

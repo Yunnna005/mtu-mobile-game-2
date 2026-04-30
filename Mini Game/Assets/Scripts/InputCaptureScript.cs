@@ -39,7 +39,8 @@ public class InputCaptureScript : MonoBehaviour
                 hasMoved = true;
                 timer += Time.deltaTime;
 
-                float worldDeltaX = t.delta.x / Screen.width * Camera.main.orthographicSize * Camera.main.aspect * 2f;
+                float screenScale = 1080f/ Screen.width;
+                float worldDeltaX = t.delta.x * screenScale / Screen.width * Camera.main.orthographicSize * Camera.main.aspect * 2f;
 
                 float velocityX = Time.deltaTime > 0 ? worldDeltaX / Time.deltaTime : 0f;
 
