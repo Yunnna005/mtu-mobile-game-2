@@ -40,7 +40,9 @@ public class GameOverTrigger : MonoBehaviour
         Ball b = other.GetComponent<Ball>();
         if (b == null || !b.hasBeenDropped) return;
         if (!ballsInTrigger.ContainsKey(b))
+        {
             ballsInTrigger.Add(b, 0f);
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -48,7 +50,9 @@ public class GameOverTrigger : MonoBehaviour
         Ball b = other.GetComponent<Ball>();
         if (b == null) return;
         if (ballsInTrigger.ContainsKey(b))
+        {
             ballsInTrigger.Remove(b);
+        }
     }
 
     public void ClearBalls()

@@ -41,7 +41,10 @@ public class AdsUnityManager : MonoBehaviour, IUnityAdsInitializationListener, I
         _rewardedAdUnitId = _androidRewardedId;
 
         if (!Advertisement.isInitialized && Advertisement.isSupported)
+        {
             Advertisement.Initialize(_androidGameId, _testMode, this);
+        }
+
     }
 
     void Update()

@@ -50,8 +50,7 @@ public class GooglePlayServicesManager : MonoBehaviour
             Debug.LogWarning("[GPGS] Not signed in."); 
             return; 
         }
-        Social.ReportScore(score, LEADERBOARD_HIGH_SCORE, success =>
-            Debug.Log("[GPGS] Score posted: " + success));
+        Social.ReportScore(score, LEADERBOARD_HIGH_SCORE, success => Debug.Log("[GPGS] Score posted: " + success));
     }
 
     public void ShowLeaderboard()
@@ -68,8 +67,7 @@ public class GooglePlayServicesManager : MonoBehaviour
     public void UnlockAchievement(string id)
     {
         if (!IsAuthenticated) return;
-        Social.ReportProgress(id, 100.0, success =>
-            Debug.Log("[GPGS] Achievement unlocked: " + success));
+        Social.ReportProgress(id, 100.0, success => Debug.Log("[GPGS] Achievement unlocked: " + success));
     }
 
     public void ShowAchievements()

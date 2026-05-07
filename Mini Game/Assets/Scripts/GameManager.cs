@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Ball Prefabs (index 0 = smallest)")]
     [SerializeField] private GameObject ball_1;
     [SerializeField] private GameObject ball_1_5;
     [SerializeField] private GameObject ball_2;
@@ -16,7 +15,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject ball_3_5;
     [SerializeField] private GameObject ball_4;
 
-    [Header("Settings")]
     [SerializeField] private float spawnY = 14f;
     [SerializeField] private float spawnZ = 0f;
     [SerializeField] private float gameOverY = 13f;
@@ -29,7 +27,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float maxUpwardVelocity = 3f;
     [SerializeField] private float mergeCooldown = 0.2f;
 
-    [Header("UI")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject gamePanel;
     [SerializeField] private Text scoreText;
@@ -220,8 +217,10 @@ public class GameManager : MonoBehaviour
         Ball[] allBalls = FindObjectsByType<Ball>(FindObjectsSortMode.None);
         foreach (Ball b in allBalls)
         {
-            if (b != null && b.gameObject != null)
+            if (b != null && b.gameObject != null) 
+            {
                 Destroy(b.gameObject);
+            }
         }
 
         if (pendingBall != null)
@@ -243,10 +242,22 @@ public class GameManager : MonoBehaviour
         score = 0;
         lastDragVelocityX = 0f;
 
-        if (scoreText != null) scoreText.text = "Score: 0";
-        if (scoreText2 != null) scoreText2.text = "Score: 0";
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (gamePanel != null) gamePanel.SetActive(true);
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: 0";
+        }
+        if (scoreText2 != null)
+        {
+            scoreText2.text = "Score: 0";
+        }
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+        }
+        if (gamePanel != null)
+        {
+            gamePanel.SetActive(true);
+        }
 
         SpawnPendingBall();
     }

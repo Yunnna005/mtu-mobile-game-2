@@ -54,7 +54,10 @@ public class AdMobManager : MonoBehaviour
     #region Banner
     public void LoadBanner()
     {
-        if (bannerView != null) bannerView.Destroy();
+        if (bannerView != null)
+        {
+            bannerView.Destroy();
+        }
 
         bannerView = new BannerView(bannerId, AdSize.Banner, AdPosition.Bottom);
         bannerView.LoadAd(new AdRequest());
